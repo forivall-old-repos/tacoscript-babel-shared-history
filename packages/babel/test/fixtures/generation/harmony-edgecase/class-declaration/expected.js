@@ -1,38 +1,54 @@
-class Test {}
-class Derived extends Super {}
-class StaticMethods {
-  static n1() {}
+class Test 
+#$}$#
+class Derived extends Super
 
-  static get get1() {}
+class StaticMethods
+  static n1() ->
 
-  static set set1(value) {}
 
-  static *gen1() {}
-}
-class Methods {
-  n2() {}
+  static get get1() ->
+  #$}$#
 
-  get get2() {}
+  static set set1(value) ->
+  #$}$#
 
-  set set2(value) {}
+  static gen1() *->
+  #$}$#
 
-  *gen1() {}
-}
-class ComputedStaticMethods {
-  static [n1]() {}
+class Methods
+  n2() ->
+  #$}$#
 
-  static get [get1]() {}
+  get get2() ->
+  #$}$#
 
-  static set [set1](value) {}
+  set set2(value) ->
+  #$}$#
 
-  static *[gen1]() {}
-}
-class ComputedMethods {
-  [n2]() {}
+  gen1() *->
+  #$}$#
 
-  get [get2]() {}
+class ComputedStaticMethods
+  static [n1]() ->
+  #$}$#
 
-  set [set2](value) {}
+  static get [get1]() ->
+  #$}$#
 
-  *[gen1]() {}
-}
+  static set [set1](value) ->
+  #$}$#
+
+  static [gen1]() *->
+  #$}$#
+
+class ComputedMethods
+  [n2]() ->
+
+
+  get [get2]() ->
+
+
+  set [set2](value) ->
+
+
+  [gen1]() *->

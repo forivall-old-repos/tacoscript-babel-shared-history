@@ -1,4 +1,3 @@
-function test() {
-  // Leading to EmptyStatement
-  ; // Trailing to EmptyStatement
-}
+function test() ->
+  #$<$## Leading to EmptyStatement
+  #$<$#$`;`$ # Trailing to EmptyStatement

@@ -1,3 +1,3 @@
-throw err;
-throw Error("foobar");
-throw new Error("foobar");
+throw err
+throw Error("foobar")
+throw new Error("foobar")

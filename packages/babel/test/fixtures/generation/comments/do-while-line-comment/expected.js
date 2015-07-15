@@ -1,2 +1,3 @@
-do {} // LINE
-while (true);
+do
+#$}$#  # LINE
+while true

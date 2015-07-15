@@ -1,4 +1,3 @@
-// Leading to block
-{
-  print("hello");
-}
+# Leading to block
+do
+  print("hello")

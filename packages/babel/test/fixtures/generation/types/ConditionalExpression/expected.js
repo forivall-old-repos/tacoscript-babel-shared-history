@@ -1,1 +1,1 @@
-foo ? foo : bar;
+toggle foo on foo off bar

@@ -1,5 +1,5 @@
-// comment
-print("hello");
+# comment
+print("hello")
 
-// comment2
-print("hello2");
+# comment2
+print("hello2")

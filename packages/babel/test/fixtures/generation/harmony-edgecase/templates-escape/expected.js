@@ -1,7 +1,7 @@
 var escaped = `
 \u2028
 \u2029
-`;
+`
 
 var escaped = `
 \v
@@ -9,4 +9,4 @@ var escaped = `
 \t
 \n
 \r
-`;
+`

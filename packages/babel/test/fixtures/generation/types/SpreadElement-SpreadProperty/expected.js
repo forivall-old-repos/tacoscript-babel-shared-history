@@ -1,3 +1,3 @@
-[...foo];
-foo(bar, ...items);
-new Foo(...foo);
+[...foo]
+foo(bar, ...items)
+new Foo(...foo)

@@ -1,5 +1,5 @@
-do {
-  test();
-} while (true);
+do
+  test()
+while true
 
-do {} while (true);
+do donothing while true

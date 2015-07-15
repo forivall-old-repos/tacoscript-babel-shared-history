@@ -1,5 +1,5 @@
-with (foo) {}
+with foo then donothing
 
-with (foo) {
-  bar();
-}
+with foo
+  bar()
+

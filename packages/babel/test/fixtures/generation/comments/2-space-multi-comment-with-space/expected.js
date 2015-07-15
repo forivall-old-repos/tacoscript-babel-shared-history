@@ -1,8 +1,9 @@
-function test() {
+function test() ->
 
-  /*
-   * this is comment
-   */
 
-  var i = 20;
-}
+  #*
+   *  this is comment
+   *#
+
+
+  var i = 20

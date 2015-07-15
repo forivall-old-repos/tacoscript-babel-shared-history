@@ -1,7 +1,7 @@
-for (var i in foo) {
-  continue;
-}
+for var i in foo
+  continue
 
-foo: for (var i in foo) {
-  continue foo;
-}
+
+foo: for var i in foo
+  continue foo
+

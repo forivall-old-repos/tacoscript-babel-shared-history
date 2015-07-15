@@ -1,1 +1,1 @@
-<Component {...x}></Component>;
+<Component {...x}></Component>

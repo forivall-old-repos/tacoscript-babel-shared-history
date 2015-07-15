@@ -1,5 +1,5 @@
-while (foo) {}
+while foo then donothing
 
-while (foo) {
-  bar();
-}
+while foo
+  bar()
+

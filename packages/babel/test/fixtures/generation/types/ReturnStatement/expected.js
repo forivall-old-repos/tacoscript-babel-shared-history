@@ -1,7 +1,6 @@
-function foo() {
-  return;
-}
+function foo() ->>
+  donothing
 
-function bar() {
-  return "foo";
-}
+
+function bar() ->>
+  "foo"

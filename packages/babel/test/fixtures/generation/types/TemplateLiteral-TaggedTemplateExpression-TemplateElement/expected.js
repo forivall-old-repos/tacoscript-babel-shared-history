@@ -1,12 +1,12 @@
-html`<b></b>`;
+html`<b></b>`
 
 `multi
-  lines`;
+  lines`
 
-`test ${ interpolation } test`;
+`test ${ interpolation } test`
 
 `foob
 
   asdf
 awer
-    erqer`;
+    erqer`

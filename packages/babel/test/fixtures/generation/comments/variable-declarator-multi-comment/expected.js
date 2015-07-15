@@ -1,14 +1,13 @@
-function test() {
+function test() ->
   var
-  /*
+  #*
    * Leading to VariableDeclarator
    * Leading to VariableDeclarator
-   */
-  i = 20,
-
-  /*
+   *#
+    i = 20
+  #*
    * Leading to VariableDeclarator
    * Leading to VariableDeclarator
-   */
-  j = 20;
+   *#
+    j = 20
 }

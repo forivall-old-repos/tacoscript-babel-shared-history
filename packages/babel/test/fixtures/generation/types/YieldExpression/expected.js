@@ -1,7 +1,7 @@
-function* foo() {
-  yield bar;
-}
+function foo() *->
+  yield bar
 
-function* bar() {
-  yield* foo();
-}
+
+function bar() *->
+  yield* foo()
+

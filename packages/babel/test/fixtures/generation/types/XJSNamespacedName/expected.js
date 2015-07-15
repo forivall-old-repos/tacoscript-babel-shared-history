@@ -1,1 +1,1 @@
-<Component:Test />;
+<Component:Test />

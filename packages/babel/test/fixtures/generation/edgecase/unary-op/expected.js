@@ -1,5 +1,6 @@
-delete delete i;
-+ +i;
-!!i;
-+ ++i;
-- --i;
+delete delete i
++ +i
+not i
+tobool i
++ ++i
+- --i

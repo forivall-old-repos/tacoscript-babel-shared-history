@@ -1,10 +1,11 @@
-try {} //
-finally {}
+try#$$#donothing#
+finally#$$#donothing
 
-try {} catch (e) {} //
-finally {}
+try#$$#donothing
+catch e then#$$#donothing#
+finally#$$#donothing
 
-{
-  try {} catch (e) {} //
-  finally {}
-}
+do
+  #$<$#try#$$#donothing
+  #$<$#catch e then#$$#donothing#
+  #$<$#finally#$$#donothing

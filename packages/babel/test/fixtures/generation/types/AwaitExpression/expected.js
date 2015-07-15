@@ -1,7 +1,7 @@
-async function foo() {
-  await bar();
-}
+function foo() async ->
+  await bar()
 
-async function bar() {
-  await* foo();
-}
+
+function bar() async ->
+  await* foo()
+

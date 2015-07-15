@@ -1,6 +1,4 @@
-function foo() {
-	bar();
-	if (foo) {
-		bar();
-	}
-}
+function foo() ->
+	bar()
+	if foo
+		bar()

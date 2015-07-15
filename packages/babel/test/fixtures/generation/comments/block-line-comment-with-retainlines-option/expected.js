@@ -1,4 +1,3 @@
-{
-  print("hello");
-  // comment
-}
+do
+  print("hello")
+  # comment

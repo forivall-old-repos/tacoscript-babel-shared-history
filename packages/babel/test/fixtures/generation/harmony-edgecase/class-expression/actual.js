@@ -1,55 +1,39 @@
-(class Test { });
-(class Derived extends Super { });
+(class Test {});
+(class Derived extends Super {});
 (class StaticMethods {
-  static n1() {
-  }
+  static n1() {}
 
-  static get get1() {
-  }
+  static get get1() {}
 
-  static set set1(value) {
-  }
+  static set set1(value) {}
 
-  static *gen1() {
-  }
+  static *gen1() {}
 });
 (class Methods {
-  n2() {
-  }
+  n2() {}
 
-  get get2() {
-  }
+  get get2() {}
 
-  set set2(value) {
-  }
+  set set2(value) {}
 
-  *gen1() {
-  }
+  *gen1() {}
 });
 (class ComputedStaticMethods {
-  static [n1]() {
-  }
+  static [n1]() {}
 
-  static get [get1]() {
-  }
+  static get [get1]() {}
 
-  static set [set1](value) {
-  }
+  static set [set1](value) {}
 
-  static *[gen1]() {
-  }
+  static *[gen1]() {}
 });
 (class ComputedMethods {
-  [n2]() {
-  }
+  [n2]() {}
 
-  get [get2]() {
-  }
+  get [get2]() {}
 
-  set [set2](value) {
-  }
+  set [set2](value) {}
 
-  *[gen1]() {
-  }
+  *[gen1]() {}
 });
 (class { });

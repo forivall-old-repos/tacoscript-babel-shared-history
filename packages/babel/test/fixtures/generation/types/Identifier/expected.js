@@ -1,2 +1,2 @@
-foo;
-undefined;
+foo
+undefined

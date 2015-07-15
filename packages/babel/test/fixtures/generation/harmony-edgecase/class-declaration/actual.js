@@ -1,10 +1,10 @@
 class Test {
 }
-class Derived extends Super {
-}
+class Derived extends Super {}
+
 class StaticMethods {
-  static n1() {
-  }
+  static n1() {}
+
 
   static get get1() {
   }

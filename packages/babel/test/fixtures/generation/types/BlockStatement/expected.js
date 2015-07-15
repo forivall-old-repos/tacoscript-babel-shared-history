@@ -1,5 +1,5 @@
-{}
+do donothing
 
-{
-  foo();
-}
+do
+  foo()
+

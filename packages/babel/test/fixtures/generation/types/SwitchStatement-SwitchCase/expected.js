@@ -1,42 +1,40 @@
-switch (foo) {}
+switch foo then donothing
 
-switch (foo) {
-  case "foo":
-}
+switch foo
+  case "foo" then donothing
 
-switch (foo) {
-  default:
-}
 
-switch (foo) {
-  case "foo":
-  default:
-}
+switch foo
+  default donothing
 
-switch (foo) {
-  case "foo":
-  case "bar":
-  default:
-}
 
-switch (foo) {
-  case "foo":
-    foo();
-    break;
+switch foo
+  case "foo" then donothing alsodo
+  default donothing
 
-  case "bar":
-    bar();
-    break;
 
-  default:
-    yay();
-}
+switch foo
+  case "foo" then donothing alsodo
+  case "bar" then donothing alsodo
+  default donothing
 
-switch (foo) {
-  case "foo":
-    foo();
-  case "bar":
-    bar();
-  default:
-    yay();
-}
+
+switch foo
+  case "foo"
+    foo()
+
+
+  case "bar"
+    bar()
+
+
+  default
+    yay()
+
+
+switch foo
+  case "foo" then foo() alsodo
+  case "bar"
+    bar() alsodo
+  default
+    yay()

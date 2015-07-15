@@ -1,5 +1,5 @@
 
-// from #23
+// from babel#23
 
 /**/
 

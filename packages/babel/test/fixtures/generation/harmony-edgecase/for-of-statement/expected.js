@@ -1,5 +1,6 @@
-function test() {
-  for (var i of array) {}
+function test() ->
+  for var i of array then donothing
+  #$}$#
 
-  for (let i of array) {}
-}
+  for i of array then donothing
+	#$}$#
