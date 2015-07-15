@@ -21,7 +21,7 @@ lint:
 
 clean: test-clean
 	rm -rf coverage
-	rm -rf packages/*/lib packages/babel/templates.json
+	rm -rf packages/*/lib packages/tacoscript/templates.json
 
 test-clean:
 	rm -rf packages/*/test/tmp

@@ -1,0 +1,9 @@
+{
+  "name": "horchata",
+  "version": "0.0.1-pre",
+  "description": "Parser for tacoscript language. Based on babylon parser",
+  "author": "Jordan J Klassen <forivall@gmail.com>",
+  "license": "MIT",
+  "repository": "forivall/tacoscript",
+  "main": "lib/index.js"
+}

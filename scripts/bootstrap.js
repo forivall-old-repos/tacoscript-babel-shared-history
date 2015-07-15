@@ -3,9 +3,6 @@ require("shelljs/global");
 var path = require("path");
 var fs   = require("fs");
 
-// uninstall global babel install
-exec("npm list --global --depth 1 babel >/dev/null 2>&1 && npm uninstall -g babel || true");
-
 // get packages
 var packages = [];
 ls("packages/*").forEach(function (loc) {
@@ -23,6 +20,7 @@ ls("packages/*").forEach(function (loc) {
 // create links
 packages.forEach(function (root) {
   console.log(root.name);
+  console.log(root.folder);
 
   var nodeModulesLoc = "packages/" + root.folder + "/node_modules";
   mkdir("-p", nodeModulesLoc);
@@ -38,9 +36,9 @@ packages.forEach(function (root) {
 
   cd("packages/" + root.folder);
   exec("npm install");
-  exec("npm link");
+  // exec("npm link");
   cd("../..");
 });
 
-exec("git submodule update --init");
+// exec("git submodule update --init");
 exec("make build");

@@ -1,14 +1,5 @@
-# NOTE: BEFORE OPENING AN ISSUE READ SEE THE [README](https://github.com/babel/babel#readme).
 
-----
-
-<p align="center">
-   <strong><a href="#setup">Setup</a></strong>
-   |
-   <strong><a href="#running-tests">Running tests</a></strong>
-   |
-   <strong><a href="#internals">Internals</a></strong>
-</p>
+**[Setup](#setup) | [Running Tests](#running-tests) | [Internals](#internals)**
 
 ----
 
@@ -19,8 +10,6 @@ contributing, please read the
 [code of conduct](https://github.com/babel/babel/blob/master/CODE_OF_CONDUCT.md).
 
 ## Developing
-
-**Note:** Versions `< 5.1.10` can't be built.
 
 #### Setup
 
