@@ -33,12 +33,7 @@ test: lint
 test-browser:
 	./scripts/test-browser.sh
 
-test-cov: clean
-	BABEL_ENV=test; \
-	make build
-	./scripts/test-cov.sh
-
-test-travis: bootstrap lint build test
+# test-travis: bootstrap lint build test
 
 publish:
 	git pull --rebase
@@ -46,7 +41,42 @@ publish:
 	node scripts/publish.js
 	make clean
 	./scripts/build-website.sh
+# publish: lint
+# 	git pull --rebase
+
+# 	make test
+
+# 	read -p "Version: " version; \
+# 	npm version $$version --message "v%s"
+
+# 	make build
+
+# 	cp dist/browser.js browser.js
+# 	cp dist/browser.min.js browser.min.js
+
+# 	cp dist/polyfill.js browser-polyfill.js
+# 	cp dist/polyfill.min.js browser-polyfill.min.js
+
+# 	cp dist/external-helpers.js external-helpers.js
+# 	cp dist/external-helpers.min.js external-helpers.min.js
+
+# 	node tools/cache-templates
+# 	test -f templates.json
+
+# 	npm publish
+
+# 	git push --follow-tags
+
+# 	make publish-cli
+# 	make publish-runtime
+
+# 	rm -rf templates.json browser.js browser.min.js browser-polyfill.js browser-polyfill.min.js external-helpers.js external-helpers.min.js
+
+publish-cli:
+	cd packages; \
+	node build-cli.js; \
+	cd babel-cli; \
+	npm publish
 
 bootstrap:
-	npm install
 	node scripts/bootstrap.js
