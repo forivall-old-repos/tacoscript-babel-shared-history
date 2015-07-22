@@ -2,10 +2,9 @@ import escapeRegExp from "lodash/string/escapeRegExp";
 import startsWith from "lodash/string/startsWith";
 import cloneDeep from "lodash/lang/cloneDeep";
 import isBoolean from "lodash/lang/isBoolean";
-import * as messages from "./messages";
 import minimatch from "minimatch";
 import contains from "lodash/collection/contains";
-import traverse from "./traversal";
+import traverse from "babel-core/lib/traversal";
 import isString from "lodash/lang/isString";
 import isRegExp from "lodash/lang/isRegExp";
 import Module from "module";
@@ -13,10 +12,8 @@ import isEmpty from "lodash/lang/isEmpty";
 import parse from "./helpers/parse";
 import path from "path";
 import has from "lodash/object/has";
-import fs from "fs";
 import * as t from "./types";
 import slash from "slash";
-import pathExists from "path-exists";
 
 export { inherits, inspect } from "util";
 

@@ -1,7 +1,7 @@
 {
-  "name": "tacoscript-internal",
+  "name": "tacoscript-core",
   "version": "0.0.1-pre",
-  "description": "Internal shared code for tacoscript and tacoscript generator",
+  "description": "A more boring flavour of ECMAScript",
   "author": "Jordan J Klassen <forivall@gmail.com>",
   "license": "MIT",
   "repository": "forivall/tacoscript",

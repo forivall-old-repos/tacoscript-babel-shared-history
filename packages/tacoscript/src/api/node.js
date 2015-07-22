@@ -12,7 +12,7 @@ export { default as options } from "../transformation/file/options/config";
 export { default as Plugin } from "../transformation/plugin";
 export { default as Transformer } from "../transformation/transformer";
 export { default as Pipeline } from "../transformation/pipeline";
-export { default as traverse } from "../traversal";
+export { default as traverse } from "babel-core/lib/traversal";
 export { version } from "../../package";
 
 import * as t from "../types";

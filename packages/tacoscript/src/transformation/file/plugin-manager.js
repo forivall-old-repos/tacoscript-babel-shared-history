@@ -2,7 +2,7 @@ import Transformer from "../transformer";
 import Plugin from "../plugin";
 import * as types from "../../types";
 import * as messages from "../../messages";
-import traverse from "../../traversal";
+import traverse from "babel-core/lib/traversal";
 import parse from "../../helpers/parse";
 
 /**

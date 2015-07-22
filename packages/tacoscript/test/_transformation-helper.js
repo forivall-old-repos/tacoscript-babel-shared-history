@@ -1,15 +1,13 @@
 var transform           = require("../lib/transformation");
 var sourceMap           = require("source-map");
 var codeFrame           = require("../lib/helpers/code-frame");
-var Module              = require("module");
 var helper              = require("./_helper");
 var assert              = require("assert");
 var chai                = require("chai");
 var path                = require("path");
-var util                = require("../lib/util");
 var _                   = require("lodash");
 
-require("../lib/polyfill");
+require("babel-core/lib/polyfill");
 
 global.assertNoOwnProperties = function (obj) {
   assert.equal(Object.getOwnPropertyNames(obj).length, 0);

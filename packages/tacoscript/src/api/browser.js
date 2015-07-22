@@ -60,8 +60,8 @@ transform.load = function (url, callback, opts = {}, hold) {
  * Register load event to transform and execute scripts.
  */
 
-if (global.addEventListener) {
-  global.addEventListener("DOMContentLoaded", runScripts, false);
-} else if (global.attachEvent) {
-  global.attachEvent("onload", runScripts);
-}
+// if (global.addEventListener) {
+//   global.addEventListener("DOMContentLoaded", runScripts, false);
+// } else if (global.attachEvent) {
+//   global.attachEvent("onload", runScripts);
+// }

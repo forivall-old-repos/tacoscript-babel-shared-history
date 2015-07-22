@@ -1,7 +1,7 @@
 if (process.env.running_under_istanbul) return;
 
 var readdir        = require("fs-readdir-recursive");
-var helper         = require("../../babel/test/_helper");
+var helper         = require("../../tacoscript/test/_helper");
 var assert         = require("assert");
 var rimraf         = require("rimraf");
 var outputFileSync = require("output-file-sync");

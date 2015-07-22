@@ -1,5 +1,5 @@
-// required to safely use babel/register within a browserify codebase
+// required to safely use tacoscript/register within a browserify codebase
 
 export default function () {}
 
-import "../../polyfill";
+import "babel/lib/polyfill";

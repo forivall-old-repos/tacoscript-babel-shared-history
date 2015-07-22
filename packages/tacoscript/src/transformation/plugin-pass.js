@@ -1,5 +1,5 @@
 import type Transformer from "./transformer";
-import traverse from "../traversal";
+import traverse from "babel-core/lib/traversal";
 import type File from "./file";
 
 /**

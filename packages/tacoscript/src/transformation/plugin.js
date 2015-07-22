@@ -1,6 +1,6 @@
 import PluginPass from "./plugin-pass";
 import * as messages from "../messages";
-import traverse from "../traversal";
+import traverse from "babel-core/lib/traversal";
 import assign from "lodash/object/assign";
 import clone from "lodash/lang/clone";
 import File from "./file";
