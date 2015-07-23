@@ -7,9 +7,9 @@ import * as t from "../../types";
 
 export function WithStatement(node, print) {
   this.keyword("with");
-  this.push("(");
+  // this.push(" ");
   print.plain(node.object);
-  this.push(")");
+  // this.push(")");
   print.block(node.body);
 }
 
