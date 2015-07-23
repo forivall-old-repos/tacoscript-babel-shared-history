@@ -6,7 +6,6 @@ import isNumber from "lodash/lang/isNumber";
 
 /**
  * Buffer for collecting generated output.
- * TODO: completely rewrite, removing all auto formatting
  */
 
 export default class Buffer {
@@ -66,7 +65,7 @@ export default class Buffer {
    */
 
   semicolon() {
-    this.newline();
+    this.push(";");
   }
 
   /**
@@ -74,8 +73,7 @@ export default class Buffer {
    */
 
   ensureSemicolon() {
-    console.log("ensureSemicolon");
-    // if (!this.isLast(";")) this.semicolon();
+    if (!this.isLast(";")) this.semicolon();
   }
 
   /**
@@ -126,6 +124,13 @@ export default class Buffer {
    */
 
   newline(i, removeLast) {
+    if (this.format.compact || this.format.retainLines) return;
+
+    if (this.format.concise) {
+      this.space();
+      return;
+    }
+
     removeLast = removeLast || false;
 
     if (isNumber(i)) {

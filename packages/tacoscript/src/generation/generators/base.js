@@ -14,27 +14,20 @@ export function Program(node, print) {
   print.sequence(node.body);
 }
 
-function isBlockStarter(node) {
-  // console.log(node);
-  return false;
-}
-
 /**
  * Print BlockStatement, collapses empty blocks, prints body.
  */
 
 export function BlockStatement(node, print) {
-  // this.push("{");
-  if (!isBlockStarter(node.parent)) {
-    this.push("do ");
-  }
+  this.push("{");
   if (node.body.length) {
-    // this.newline();
+    this.newline();
     print.sequence(node.body, { indent: true });
-    // this.rightBrace();
+    if (!this.format.retainLines) this.removeLast("\n");
+    this.rightBrace();
   } else {
-    this.push("donothing");
     print.printInnerComments();
+    this.push("}");
   }
 }
 

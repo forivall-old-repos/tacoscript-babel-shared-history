@@ -314,8 +314,7 @@ class CodeGenerator {
 
   printBlock(print, node) {
     if (t.isEmptyStatement(node)) {
-      this.push("donothing");
-      // this.semicolon();
+      this.semicolon();
     } else {
       this.push(" ");
       print.plain(node);
