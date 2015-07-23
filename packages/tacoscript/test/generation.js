@@ -1,33 +1,34 @@
-var generate = require("../lib/generation");
+// var genJs = require("../lib/gen-js");
+var genJs = require("../lib/generation");
+// var genTaco = require("../lib/gen-taco");
 var assert   = require("assert");
 var helper   = require("./_helper");
-var parse    = require("../lib/helpers/parse");
+var parseJs  = require("../lib/helpers/parse");
+// var horchata = require("horchata");
 var chai     = require("chai");
 var t        = require("../lib/types");
 var _        = require("lodash");
 
-suite("generation", function () {
-  test("completeness", function () {
-    _.each(t.VISITOR_KEYS, function (keys, type) {
-      assert.ok(!!generate.CodeGenerator.prototype[type], type + " should exist");
-    });
-
-    _.each(generate.CodeGenerator.prototype, function (fn, type) {
-      if (!/[A-Z]/.test(type[0])) return;
-      assert.ok(t.VISITOR_KEYS[type], type + " should not exist");
-    });
-  });
-});
+// suite("generation", function () {
+//   test("completeness", function () {
+//     _.each(t.VISITOR_KEYS, function (keys, type) {
+//       assert.ok(!!generate.CodeGenerator.prototype[type], type + " should exist");
+//     });
+//
+//     _.each(generate.CodeGenerator.prototype, function (fn, type) {
+//       if (!/[A-Z]/.test(type[0])) return;
+//       assert.ok(t.VISITOR_KEYS[type], type + " should not exist");
+//     });
+//   });
+// });
 
 _.each(helper.get("generation"), function (testSuite) {
-  suite("generation/" + testSuite.title, function () {
+  suite("generation-js-circular/" + testSuite.title, function () {
     _.each(testSuite.tests, function (task) {
       test(task.title, !task.disabled && function () {
-        var expect = task.expect;
-        var actual = task.actual;
 
-        var actualAst = parse(actual.code, {
-          filename: actual.loc,
+        var actualAst = parseJs(task.js.code, {
+          filename: task.js.loc,
           nonStandard: true,
           strictMode: false,
           sourceType: "module",
@@ -40,8 +41,8 @@ _.each(helper.get("generation"), function (testSuite) {
           }
         });
 
-        var actualCode = generate(actualAst, task.options, actual.code).code;
-        chai.expect(actualCode).to.equal(expect.code, actual.loc + " !== " + expect.loc);
+        var actualJsCode = genJs(actualAst, task.options, task.taco.code).code;
+        chai.expect(actualJsCode).to.equal(task.js.code, task.js.loc + " (generated) !== " + task.js.loc);
       });
     });
   });

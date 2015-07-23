@@ -20,7 +20,7 @@ var readFile = exports.readFile = function (filename) {
 };
 
 exports.assertVendor = function (name) {
-  if (!pathExists.sync(__dirname + "/../../../vendor/" + name)) {
+  if (!pathExists.sync(path.join(__dirname, "/../../../vendor/", name))) {
     console.error("No vendor/" + name + " - run `make bootstrap`");
     process.exit(1);
   }
@@ -30,7 +30,7 @@ exports.get = function (entryName, entryLoc) {
   if (exports.cache[entryName]) return exports.cache[entryName];
 
   var suites = [];
-  var entryLoc = entryLoc || __dirname + "/fixtures/" + entryName;
+  entryLoc = entryLoc || path.join(__dirname, "/fixtures/", entryName);
 
   _.each(fs.readdirSync(entryLoc), function (suiteName) {
     if (suiteName[0] === ".") return;
@@ -61,10 +61,14 @@ exports.get = function (entryName, entryLoc) {
 
       var actualLocAlias = suiteName + "/" + taskName + "/actual.js";
       var expectLocAlias = suiteName + "/" + taskName + "/expected.js";
+      var jsLocAlias = suiteName + "/" + taskName + "/code.js";
+      var tacoLocAlias = suiteName + "/" + taskName + "/code.taco";
       var execLocAlias   = suiteName + "/" + taskName + "/exec.js";
 
       var actualLoc = taskDir + "/actual.js";
       var expectLoc = taskDir + "/expected.js";
+      var jsLoc = taskDir + "/code.js";
+      var tacoLoc = taskDir + "/code.taco";
       var execLoc   = taskDir + "/exec.js";
 
       if (fs.statSync(taskDir).isFile()) {
@@ -101,6 +105,16 @@ exports.get = function (entryName, entryLoc) {
           loc: expectLoc,
           code: readFile(expectLoc),
           filename: expectLocAlias
+        },
+        js: {
+          loc: jsLoc,
+          code: readFile(jsLoc),
+          filename: jsLocAlias
+        },
+        taco: {
+          loc: tacoLoc,
+          code: readFile(tacoLoc),
+          filename: tacoLocAlias
         }
       };
 
