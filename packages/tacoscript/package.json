@@ -26,6 +26,7 @@
     "test": "make test"
   },
   "dependencies": {
+    "babel-core": "^5.8.12",
     "babylon": "^5.7.2",
     "bluebird": "^2.9.33",
     "chalk": "^1.0.0",
@@ -38,6 +39,7 @@
     "fs-readdir-recursive": "^0.1.0",
     "globals": "^6.4.0",
     "home-or-tmp": "^1.0.0",
+    "horchata": "*",
     "is-integer": "^1.0.4",
     "js-tokens": "1.0.1",
     "line-numbers": "0.2.0",
