@@ -1,4 +1,5 @@
 import * as babylon from "babylon";
+import attachTokens from "./attach-tokens";
 
 /**
  * Parse `code` with normalized options, collecting tokens and comments.
@@ -22,6 +23,5 @@ export default function (code, opts = {}) {
     parseOpts.plugins.jsx = true;
     parseOpts.plugins.flow = true;
   }
-
-  return babylon.parse(code, parseOpts);
+  return attachTokens(babylon.parse(code, parseOpts), code, {whitespace: true});
 }
