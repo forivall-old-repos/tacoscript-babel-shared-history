@@ -13,7 +13,7 @@ import includes from "lodash/collection/includes";
 import traverse from "babel-core/lib/traversal";
 import Logger from "./logger";
 import Plugin from "../plugin";
-import parse from "../../helpers/parse";
+import parse from "../../helpers/parse-js";
 import Hub from "babel-core/lib/traversal/hub";
 import * as util from  "../../util";
 import path from "path";

@@ -3,7 +3,7 @@ import Plugin from "../plugin";
 import * as types from "../../types";
 import * as messages from "../../messages";
 import traverse from "babel-core/lib/traversal";
-import parse from "../../helpers/parse";
+import parse from "../../helpers/parse-js";
 
 /**
  * [Please add a description.]

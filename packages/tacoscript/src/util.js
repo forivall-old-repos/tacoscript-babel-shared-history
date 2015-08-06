@@ -9,7 +9,7 @@ import isString from "lodash/lang/isString";
 import isRegExp from "lodash/lang/isRegExp";
 import Module from "module";
 import isEmpty from "lodash/lang/isEmpty";
-import parse from "./helpers/parse";
+import parse from "./helpers/parse-js";
 import path from "path";
 import has from "lodash/object/has";
 import * as t from "./types";

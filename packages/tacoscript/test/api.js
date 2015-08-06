@@ -102,7 +102,7 @@ suite("api", function () {
     var expected = 'import foo from "resolved/foo-import-default";\nimport "resolved/foo-import-bare";\nexport { foo } from "resolved/foo-export-named";';
 
     return transformAsync(actual, {
-      blacklist: ["es6.modules", "strict"],
+      blacklist: [], // TODO: test blacklist
       resolveModuleSource: function (originalSource) {
         return "resolved/" + originalSource;
       }

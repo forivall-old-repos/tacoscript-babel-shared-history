@@ -1,6 +1,6 @@
 var assert = require("assert");
 var util   = require("../lib/util");
-var parse  = require("../lib/helpers/parse");
+var parse  = require("../lib/helpers/parse-js");
 var t      = require("../lib/types");
 
 suite("util", function () {
