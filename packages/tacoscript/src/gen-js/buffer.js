@@ -22,7 +22,7 @@ export default class Buffer {
    */
 
   get() {
-    return trimRight(this.buf);
+    return trimRight(this.buf.buf);
   }
 
   /**
@@ -112,7 +112,7 @@ export default class Buffer {
   removeLast(cha) {
     if (!this.isLast(cha)) return;
 
-    this.buf.buf = this.buf.buf.substr(0, this.buf.length - 1);
+    this.buf.buf = this.buf.buf.substr(0, this.buf.buf.length - 1);
     this.position.unshift(cha);
   }
 
@@ -206,14 +206,14 @@ export default class Buffer {
    */
 
   _removeSpacesAfterLastNewline() {
-    var lastNewlineIndex = this.buf.lastIndexOf("\n");
+    var lastNewlineIndex = this.buf.buf.lastIndexOf("\n");
     if (lastNewlineIndex === -1) {
       return;
     }
 
-    var index = this.buf.length - 1;
+    var index = this.buf.buf.length - 1;
     while (index > lastNewlineIndex) {
-      if (this.buf[index] !== " ") {
+      if (this.buf.buf[index] !== " ") {
         break;
       }
 
@@ -221,7 +221,7 @@ export default class Buffer {
     }
 
     if (index === lastNewlineIndex) {
-      this.buf = this.buf.substring(0, index + 1);
+      this.buf.buf = this.buf.buf.substring(0, index + 1);
     }
   }
 
@@ -276,7 +276,7 @@ export default class Buffer {
    */
 
   endsWith(str, buf = this.buf.buf) {
-    return buf.buf.slice(-str.length) === str;
+    return buf.slice(-str.length) === str;
   }
 
   /**
