@@ -3,7 +3,7 @@ import trimRight from "trim-right";
 import isBoolean from "lodash/lang/isBoolean";
 import includes from "lodash/collection/includes";
 import isNumber from "lodash/lang/isNumber";
-import StringStream from "../../helpers/str-stream"
+import StringStream from "../helpers/str-stream"
 
 /**
  * Buffer for collecting generated output.
