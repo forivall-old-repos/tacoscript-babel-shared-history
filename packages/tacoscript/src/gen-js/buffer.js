@@ -62,6 +62,31 @@ export default class Buffer {
   }
 
   /**
+   * Add a semicolon to the buffer.
+   */
+
+  semicolon() {
+    this.push(";");
+  }
+
+  /**
+   * Ensure last character is a semicolon.
+   */
+
+  ensureSemicolon() {
+    if (!this.isLast(";")) this.semicolon();
+  }
+
+  /**
+   * Add a right brace to the buffer.
+   */
+
+  rightBrace() {
+    this.newline(true);
+    this.push("}");
+  }
+
+  /**
    * Add a keyword to the buffer.
    */
 
@@ -122,6 +147,81 @@ export default class Buffer {
       this.dedent();
       this.newline();
       this.push(")");
+    }
+  }
+
+  /**
+   * Add a newline (or many newlines), maintaining formatting.
+   * Strips multiple newlines if removeLast is true.
+   */
+
+  newline(i, removeLast) {
+    if (this.format.compact || this.format.retainLines) return;
+
+    if (this.format.concise) {
+      this.space();
+      return;
+    }
+
+    removeLast = removeLast || false;
+
+    if (isNumber(i)) {
+      i = Math.min(2, i);
+
+      if (this.endsWith("{\n") || this.endsWith(":\n")) i--;
+      if (i <= 0) return;
+
+      while (i > 0) {
+        this._newline(removeLast);
+        i--;
+      }
+      return;
+    }
+
+    if (isBoolean(i)) {
+      removeLast = i;
+    }
+
+    this._newline(removeLast);
+  }
+
+  /**
+   * Adds a newline unless there is already two previous newlines.
+   */
+
+  _newline(removeLast) {
+    // never allow more than two lines
+    if (this.endsWith("\n\n")) return;
+
+    // remove the last newline
+    if (removeLast && this.isLast("\n")) this.removeLast("\n");
+
+    this.removeLast(" ");
+    this._removeSpacesAfterLastNewline();
+    this._push("\n");
+  }
+
+  /**
+   * If buffer ends with a newline and some spaces after it, trim those spaces.
+   */
+
+  _removeSpacesAfterLastNewline() {
+    var lastNewlineIndex = this.buf.lastIndexOf("\n");
+    if (lastNewlineIndex === -1) {
+      return;
+    }
+
+    var index = this.buf.length - 1;
+    while (index > lastNewlineIndex) {
+      if (this.buf[index] !== " ") {
+        break;
+      }
+
+      index--;
+    }
+
+    if (index === lastNewlineIndex) {
+      this.buf = this.buf.substring(0, index + 1);
     }
   }
 
