@@ -1,64 +1,29 @@
-import repeating from "repeating";
-import trimRight from "trim-right";
 import isBoolean from "lodash/lang/isBoolean";
 import includes from "lodash/collection/includes";
 import isNumber from "lodash/lang/isNumber";
-import StringStream from "../helpers/str-stream"
+import isArray from "lodash/lang/isArray";
+import isString from "lodash/lang/isString";
+
+import getTokenFromString from "../helpers/get-token";
+import { Token } from "babylon/lib/tokenizer";
 
 /**
  * Buffer for collecting generated output.
  */
 
-export default class Buffer {
-  constructor(position, format) {
+export default class TokenBuffer {
+  constructor(position) {
     this.position = position;
-    this._indent  = format.indent.base;
-    this.format   = format;
-    this.buf      = new StringStream();
+    this.tokens   = [];
+    this._buf     = "";
   }
 
   /**
-   * Get the current trimmed buffer.
+   * Get the buffer of tokens as a string.
    */
 
   get() {
-    return trimRight(this.buf.buf);
-  }
-
-  /**
-   * Get the current indent.
-   */
-
-  getIndent() {
-    if (this.format.compact || this.format.concise) {
-      return "";
-    } else {
-      return repeating(this.format.indent.style, this._indent);
-    }
-  }
-
-  /**
-   * Get the current indent size.
-   */
-
-  indentSize() {
-    return this.getIndent().length;
-  }
-
-  /**
-   * Increment indent size.
-   */
-
-  indent() {
-    this._indent++;
-  }
-
-  /**
-   * Decrement indent size.
-   */
-
-  dedent() {
-    this._indent--;
+    return this._buf;
   }
 
   /**
@@ -82,7 +47,6 @@ export default class Buffer {
    */
 
   rightBrace() {
-    this.newline(true);
     this.push("}");
   }
 
@@ -226,30 +190,28 @@ export default class Buffer {
   }
 
   /**
-   * Push a string to the buffer, maintaining indentation and newlines.
+   * Push a string token(s) to the buffer, maintaining indentation and newlines.
    */
 
-  push(str) {
-    if (this._indent && str !== "\n") {
-      // we have an indent level and we aren't pushing a newline
-      var indent = this.getIndent();
-
-      // replace all newlines with newlines with the indentation
-      str = str.replace(/\n/g, `\n${indent}`);
-
+  push(...tokens) {
+    for (let token of (tokens: Array)) {
+      this._push(token);
     }
-
-    this._push(str);
   }
 
   /**
    * Push a string to the buffer.
    */
 
-  _push(str) {
+  _push(token) {
+    if (isString(token)) {
+      token = new Token(getTokenFromString(token));
+    }
+
     // see startTerminatorless() instance method
     var parenPushNewlineState = this.parenPushNewlineState;
-    if (parenPushNewlineState) {
+    if (parenPushNewlineState && token.type === 'Whitespace') {
+      let str = token.value;
       for (var i = 0; i < str.length; i++) {
         var cha = str[i];
 
@@ -260,15 +222,16 @@ export default class Buffer {
 
         if (cha === "\n") {
           // we're going to break this terminator expression so we need to add a parentheses
-          this._push("(");
+          this._push1("(");
           this.indent();
           parenPushNewlineState.printed = true;
         }
       }
     }
 
-    this.position.push(str);
-    this.buf.write(str);
+    // TODO: position will be updated when tokens are serialized
+    // this.position.push(token);
+    this.tokens.push(token);
   }
 
   /**
