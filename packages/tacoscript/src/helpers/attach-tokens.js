@@ -4,7 +4,10 @@ import {Token} from "babylon/lib/tokenize";
 
 import traverse from 'babel-core/lib/traversal';
 import * as types from 'babel-core/lib/types';
-import {flatten, compact} from 'lodash';
+
+import flatten from "lodash/array/flatten";
+import compact from "lodash/array/compact";
+import includes from "lodash/collection/includes";
 
 export default function attachTokens(ast, code, options={}) {
   var tokens = ast.tokens;
@@ -43,18 +46,26 @@ export default function attachTokens(ast, code, options={}) {
       // console.log(node.end, stack.length, popped === node);
 
       let childNodes = node.children;
-      if (!childNodes) { return; }
-      for (let childNode, childNodeBefore, childNodeAfter, i = 0, l = childNodes.length;
-      (childNode = childNodes[i], childNodeBefore = childNodes[i - 1], childNodeAfter = childNodes[i + 1], i < l); i++) {
-        // TODO: optimise, apply rules to decide which node owns which tokens
-        childNode.tokensBefore = [];
-        childNode.tokensAfter = [];
-        for (let token of (node.tokens: Array)) {
-          if ((!childNodeBefore || token.start >= childNodeBefore.end) && token.end <= childNode.start) {
-            childNode.tokensBefore.push(token);
-          } else if (token.start >= childNode.end && (!childNodeAfter || token.end <= childNodeAfter.start)) {
-            childNode.tokensAfter.push(token);
-          }
+      if (!childNodes || !childNodes.length) { return; }
+      let childNode, childNodeBefore, childNodeAfter, childNodeIndex = -1;
+      function nextChild() {
+        childNodeIndex++;
+        childNodeBefore = childNodes[childNodeIndex - 1];
+        childNode = childNodes[childNodeIndex];
+        childNodeAfter = childNodes[childNodeIndex + 1];
+      }
+      nextChild();
+      for (let token of (node.tokens: Array)) {
+
+        if ((!childNodeBefore || token.start >= childNodeBefore.end) && token.end <= childNode.start) {
+          (childNode.tokensBefore || (childNode.tokensBefore = [])).push(token);
+        } else if (includes(childNode.tokens, token)) {
+
+        } else if (token.start >= childNode.end && (!childNodeAfter || token.end <= childNodeAfter.start)) {
+          // TODO: create rules to go to the nextchild ; lookahead, etc.
+          (childNode.tokensAfter || (childNode.tokensAfter = [])).push(token);
+        } else {
+          nextChild();
         }
       }
     }
