@@ -1,14 +1,13 @@
-import detectIndent from "detect-indent";
 import Whitespace from "./whitespace";
 import repeating from "repeating";
 import SourceMap from "./source-map";
 import Position from "./position";
-import * as messages from "../messages";
-import Buffer from "./buffer";
+import TokenBuffer from "./token-buffer";
 import extend from "lodash/object/extend";
 import each from "lodash/collection/each";
 import n from "./node";
 import * as t from "../types";
+import { types as tt } from "babylon/lib/tokenizer/types";
 
 /**
  * Babel's code generator, turns an ast into code, maintaining sourcemaps,
@@ -21,88 +20,13 @@ class CodeGenerator {
 
     this.comments = ast.comments || [];
     this.tokens   = ast.tokens || [];
-    this.format   = CodeGenerator.normalizeOptions(code, opts, this.tokens);
     this.opts     = opts;
     this.ast      = ast;
 
     this.whitespace = new Whitespace(this.tokens);
     this.position   = new Position;
     this.map        = new SourceMap(this.position, opts, code);
-    this.buffer     = new Buffer(this.position, this.format);
-  }
-
-  /**
-   * Normalize generator options, setting defaults.
-   *
-   * - Detects code indentation.
-   * - If `opts.compact = "auto"` and the code is over 100KB, `compact` will be set to `true`.
-   */
-
-  static normalizeOptions(code, opts, tokens) {
-    var style = "  ";
-    if (code) {
-      var indent = detectIndent(code).indent;
-      if (indent && indent !== " ") style = indent;
-    }
-
-    var format = {
-      shouldPrintComment: opts.shouldPrintComment,
-      retainLines: opts.retainLines,
-      comments: opts.comments == null || opts.comments,
-      compact: opts.compact,
-      quotes: CodeGenerator.findCommonStringDelimiter(code, tokens),
-      indent: {
-        adjustMultilineComment: true,
-        style: style,
-        base: 0
-      }
-    };
-
-    if (format.compact === "auto") {
-      format.compact = code.length > 100000; // 100KB
-
-      if (format.compact) {
-        console.error("[BABEL] " + messages.get("codeGeneratorDeopt", opts.filename, "100KB"));
-      }
-    }
-
-    if (format.compact) {
-      format.indent.adjustMultilineComment = false;
-    }
-
-    return format;
-  }
-
-  /**
-   * Determine if input code uses more single or double quotes.
-   */
-  static findCommonStringDelimiter(code, tokens) {
-    var occurences = {
-      single: 0,
-      double: 0
-    };
-
-    var checked = 0;
-
-    for (var i = 0; i < tokens.length; i++) {
-      var token = tokens[i];
-      if (token.type.label !== "string") continue;
-
-      var raw = code.slice(token.start, token.end);
-      if (raw[0] === "'") {
-        occurences.single++;
-      } else {
-        occurences.double++;
-      }
-
-      checked++;
-      if (checked >= 3) break;
-    }
-    if (occurences.single > occurences.double) {
-      return "single";
-    } else {
-      return "double";
-    }
+    this.buffer     = new TokenBuffer(this.position, this.format);
   }
 
   /**
@@ -134,14 +58,6 @@ class CodeGenerator {
 
     this.print(ast);
 
-    if (ast.comments) {
-      var comments = [];
-      for (var comment of (ast.comments: Array)) {
-        if (!comment._displayed) comments.push(comment);
-      }
-      this._printComments(comments);
-    }
-
     return {
       map:  this.map.get(),
       code: this.buffer.get()
@@ -149,67 +65,20 @@ class CodeGenerator {
   }
 
   /**
-   * [Please add a description.]
+   * Catch up to this node's first token if we're behind
    */
 
   catchUp(node) {
     // catch up to this nodes newline if we're behind
-    if (node.loc && this.format.retainLines && this.buffer.buf) {
-      while (this.position.line < node.loc.start.line) {
-        this._push("\n");
-      }
-    }
+    // TODO
   }
 
   /**
-   * [Please add a description.]
-   */
-
-  _printNewline(leading, node, parent, opts) {
-    if (!opts.statement && !n.isUserWhitespacable(node, parent)) {
-      return;
-    }
-
-    var lines = 0;
-
-    if (node.start != null && !node._ignoreUserWhitespace) {
-      // user node
-      if (leading) {
-        lines = this.whitespace.getNewlinesBefore(node);
-      } else {
-        lines = this.whitespace.getNewlinesAfter(node);
-      }
-    } else {
-      // generated node
-      if (!leading) lines++; // always include at least a single line after
-      if (opts.addNewlines) lines += opts.addNewlines(leading, node) || 0;
-
-      var needs = n.needsWhitespaceAfter;
-      if (leading) needs = n.needsWhitespaceBefore;
-      if (needs(node, parent)) lines++;
-
-      // generated nodes can't add starting file whitespace
-      if (!this.buffer.buf) lines = 0;
-    }
-
-    this.newline(lines);
-  }
-
-  /**
-   * Print a plain node.
+   * Print (Tokenize) a plain node.
    */
 
   print(node, parent, opts = {}) {
     if (!node) return;
-
-    if (parent && parent._compact) {
-      node._compact = true;
-    }
-
-    var oldConcise = this.format.concise;
-    if (node._compact) {
-      this.format.concise = true;
-    }
 
     if (!this[node.type]) {
       throw new ReferenceError(`unknown node of type ${JSON.stringify(node.type)} with constructor ${JSON.stringify(node && node.constructor.name)}`);
@@ -218,11 +87,9 @@ class CodeGenerator {
     var needsParens = n.needsParens(node, parent);
     if (needsParens) this.push("(");
 
-    this.printLeadingComments(node, parent);
-
     this.catchUp(node);
 
-    this._printNewline(true, node, parent, opts);
+    this.printLeadingTokens(node, parent);
 
     if (opts.before) opts.before();
     this.map.mark(node, "start");
@@ -234,9 +101,7 @@ class CodeGenerator {
     this.map.mark(node, "end");
     if (opts.after) opts.after();
 
-    this.format.concise = oldConcise;
-
-    this._printNewline(false, node, parent, opts);
+    this.printTrailingTokens(node, parent);
 
     this.printTrailingComments(node, parent);
   }
@@ -361,6 +226,16 @@ class CodeGenerator {
     this._printComments(this.getComments("leadingComments", node, parent));
   }
 
+  printLeadingTokens(node, parent) {
+    if (node.tokensBefore) {
+
+    }
+  }
+
+  printTrailingTokens(node, parent) {
+    // debugger;
+  }
+
   /**
    * [Please add a description.]
    */
@@ -469,7 +344,7 @@ class CodeGenerator {
  * CodeGenerator instance
  */
 
-each(Buffer.prototype, function (fn, key) {
+each(TokenBuffer.prototype, function (fn, key) {
   CodeGenerator.prototype[key] = function () {
     return fn.apply(this.buffer, arguments);
   };
