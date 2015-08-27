@@ -18,3 +18,4 @@ dist
 _babel.github.io
 /tests/.browser-build.js
 .settings
+tags
