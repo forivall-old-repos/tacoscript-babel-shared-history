@@ -12,7 +12,8 @@ export function TaggedTemplateExpression(node) {
  */
 
 export function TemplateElement(node) {
-  this._push(node.value.raw);
+  this.push(...node.tokens);
+  // this._push(node.value.raw);
 }
 
 /**

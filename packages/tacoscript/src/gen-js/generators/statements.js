@@ -81,7 +81,7 @@ var buildForXStatement = function (op) {
     this.keyword("for");
     this.push("(");
     this.print(node.left, node);
-    this.push(` ${op} `);
+    this.push(" ", op, " ");
     this.print(node.right, node);
     this.push(")");
     this.printBlock(node.body, node);
@@ -106,7 +106,7 @@ export function DoWhileStatement(node) {
   this.keyword("while");
   this.push("(");
   this.print(node.test, node);
-  this.push(");");
+  this.push(")", ";");
 }
 
 /**

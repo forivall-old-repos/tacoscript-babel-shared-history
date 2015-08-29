@@ -209,33 +209,34 @@ export default class TokenBuffer {
    * Push a string to the buffer.
    */
 
-  _push(token) {
+  _push(token, options = {}) {
     if (isString(token)) {
-      let s = getToken(token);
+      let s = getToken(token, options);
       token = new Token(s);
       token.raw = s.raw;
     }
 
     // see startTerminatorless() instance method
-    var parenPushNewlineState = this.parenPushNewlineState;
-    if (parenPushNewlineState && token.type === 'Whitespace') {
-      let str = token.value;
-      for (var i = 0; i < str.length; i++) {
-        var cha = str[i];
-
-        // we can ignore spaces since they wont interupt a terminatorless separator
-        if (cha === " ") continue;
-
-        this.parenPushNewlineState = null;
-
-        if (cha === "\n") {
-          // we're going to break this terminator expression so we need to add a parentheses
-          this._push("(");
-          this.indent();
-          parenPushNewlineState.printed = true;
-        }
-      }
-    }
+    // XXX FIXME
+    // var parenPushNewlineState = this.parenPushNewlineState;
+    // if (parenPushNewlineState && token.type === 'Whitespace') {
+    //   let str = token.value;
+    //   for (var i = 0; i < str.length; i++) {
+    //     var cha = str[i];
+    //
+    //     // we can ignore spaces since they wont interupt a terminatorless separator
+    //     if (cha === " ") continue;
+    //
+    //     this.parenPushNewlineState = null;
+    //
+    //     if (cha === "\n") {
+    //       // we're going to break this terminator expression so we need to add a parentheses
+    //       this._push("(");
+    //       this.indent();
+    //       parenPushNewlineState.printed = true;
+    //     }
+    //   }
+    // }
 
     // TODO: position will be updated when tokens are serialized
     // this.position.push(token);
@@ -285,13 +286,18 @@ export default class TokenBuffer {
     let buf = "";
     for (let token of (this.tokens: Array)) {
       if (token.start && token.end) {
-        buf.push(this.code.slice(token.start, token.end));
-      } else if (tokenSerializationTypes.label.contains(token.type.label)) {
-        buf.push(token.type.label);
-      } else if (tokenSerializationTypes.label.contains(token.type.value)) {
-        buf.push(token.value);
-      } else if (tokenSerializationTypes.label.contains(token.type.value)) {
-        buf.push(token.raw);
+        buf += (this.code.slice(token.start, token.end));
+      } else if (token.type === "Whitespace") {
+        buf += token.value;
+        // TODO: comments
+      } else if (includes(tokenSerializationTypes.label, token.type.label)) {
+        buf += (token.type.label);
+      } else if (includes(tokenSerializationTypes.value, token.type.label)) {
+        buf += (token.value);
+      } else if (includes(tokenSerializationTypes.raw, token.type.label)) {
+        buf += (token.raw);
+      } else {
+        console.log(token);
       }
     }
     this._buf = buf;

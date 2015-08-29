@@ -5,10 +5,10 @@ import isString from "lodash/lang/isString";
 
 var tokenizer = null;
 
-export default function getToken(s) {
+export default function getToken(s, options) {
   if (!isString(s)) { return s; }
   if (tokenizer == null) { tokenizer = new MicroTokenizer(); }
-  return tokenizer.getTokenFromString(s);
+  return tokenizer.getTokenFromString(s, options);
 }
 
 export class MicroTokenizer {
@@ -20,10 +20,11 @@ export class MicroTokenizer {
     this.options.features["es7.exponentiationOperator"] = true;
   }
 
-  getTokenFromString(input) {
+  getTokenFromString(input, stateOpts) {
     this.input = input;
     this.state = new State();
     this.state.init(input);
+    Object.assign(this.state, stateOpts);
 
     this.skipSpace();
 
@@ -61,7 +62,11 @@ export class MicroTokenizer {
       } else {
         this.state = new State();
         this.state.init(this.input);
-        this.readTmplToken();
+        try {
+          this.readTmplToken();
+        } catch (e) {
+          this.raise(0, "Could not consume entire string '" + this.input + "'");
+        }
       }
     }
   }

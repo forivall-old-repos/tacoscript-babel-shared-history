@@ -84,7 +84,7 @@ export function ConditionalExpression(node, parent) {
  */
 
 export function NewExpression(node, parent) {
-  this.push("new ");
+  this.push("new", " ");
   this.print(node.callee, node);
   this.push("(");
   this.printList(node.arguments, node);
@@ -205,7 +205,7 @@ export function ExpressionStatement(node, parent) {
 
 export function AssignmentPattern(node, parent) {
   this.print(node.left, node);
-  this.push(" = ");
+  this.push("=");
   this.print(node.right, node);
 }
 
@@ -221,7 +221,7 @@ export function AssignmentExpression(node, parent) {
   spaces = true; // todo: https://github.com/babel/babel/issues/1835
   this.space(spaces);
 
-  this.push(node.operator);
+  this._push(node.operator, {exprAllowed: false});
 
   if (!spaces) {
     // space is mandatory to avoid outputting <!--

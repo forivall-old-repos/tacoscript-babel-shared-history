@@ -36,7 +36,7 @@ export function _method(node) {
   }
 
   if (kind === "get" || kind === "set") {
-    this.push(kind + " ");
+    this.push(kind, " ");
   }
 
   if (value.async) this.push("async ");
@@ -87,7 +87,7 @@ export { FunctionExpression as FunctionDeclaration };
  */
 
 export function ArrowFunctionExpression(node, parent) {
-  if (node.async) this.push("async ");
+  if (node.async) this.push("async", " ");
 
   if (node.params.length === 1 && t.isIdentifier(node.params[0])) {
     this.print(node.params[0], node);
@@ -95,7 +95,7 @@ export function ArrowFunctionExpression(node, parent) {
     this._params(node);
   }
 
-  this.push(" => ");
+  this.push("=>");
 
   const bodyNeedsParens = t.isObjectExpression(node.body);
 

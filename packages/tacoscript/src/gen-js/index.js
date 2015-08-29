@@ -165,7 +165,6 @@ class CodeGenerator {
   printList(items, parent, opts = {}) {
     if (opts.separator == null) {
       opts.separator = ",";
-      // if (!this.format.compact) opts.separator += " ";
     }
 
     return this.printJoin(items, parent, opts);
@@ -314,7 +313,7 @@ class CodeGenerator {
       //   val = this.getIndent() + val;
       // }
 
-      //
+      //"get "
       this._push(val);
 
       if (comment.type === "CommentLine") {
