@@ -28,7 +28,7 @@ export function IfStatement(node) {
 
   if (node.alternate) {
     if (this.isLast("}")) this.space();
-    this.push("else ");
+    this.push("else", " ");
     this.printAndIndentOnComments(node.alternate, node);
   }
 }
@@ -100,7 +100,7 @@ export var ForOfStatement = buildForXStatement("of");
  */
 
 export function DoWhileStatement(node) {
-  this.push("do ");
+  this.push("do", " ");
   this.print(node.body, node);
   this.space();
   this.keyword("while");
@@ -145,7 +145,7 @@ export var ThrowStatement    = buildLabelStatement("throw", "argument");
 
 export function LabeledStatement(node) {
   this.print(node.label, node);
-  this.push(": ");
+  this.push(":", " ");
   this.print(node.body, node);
 }
 
@@ -169,7 +169,7 @@ export function TryStatement(node) {
 
   if (node.finalizer) {
     this.space();
-    this.push("finally ");
+    this.push("finally", " ");
     this.print(node.finalizer, node);
   }
 }
@@ -182,7 +182,7 @@ export function CatchClause(node) {
   this.keyword("catch");
   this.push("(");
   this.print(node.param, node);
-  this.push(") ");
+  this.push(")", " ");
   this.print(node.body, node);
 }
 
@@ -214,11 +214,11 @@ export function SwitchStatement(node) {
 
 export function SwitchCase(node) {
   if (node.test) {
-    this.push("case ");
+    this.push("case", " ");
     this.print(node.test, node);
     this.push(":");
   } else {
-    this.push("default:");
+    this.push("default", ":");
   }
 
   if (node.consequent.length) {
@@ -232,7 +232,7 @@ export function SwitchCase(node) {
  */
 
 export function DebuggerStatement() {
-  this.push("debugger;");
+  this.push("debugger", ";");
 }
 
 /**
@@ -240,7 +240,7 @@ export function DebuggerStatement() {
  */
 
 export function VariableDeclaration(node, parent) {
-  this.push(node.kind + " ");
+  this.push(node.kind, " ");
 
   var hasInits = false;
   // don't add whitespace to loop heads
@@ -265,10 +265,8 @@ export function VariableDeclaration(node, parent) {
   //       bar = "foo";
   //
 
-  var sep;
-  if (!this.format.compact && !this.format.concise && hasInits && !this.format.retainLines) {
-    sep = `,\n${repeating(" ", node.kind.length + 1)}`;
-  }
+  var sep = [",", " "];
+  // sep = `,\n${repeating(" ", node.kind.length + 1)}`;
 
   //
 

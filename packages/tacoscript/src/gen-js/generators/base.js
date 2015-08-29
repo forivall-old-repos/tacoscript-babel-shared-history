@@ -23,7 +23,6 @@ export function BlockStatement(node, parent) {
   if (node.body.length) {
     this.newline();
     this.printSequence(node.body, node, { indent: true });
-    if (!this.format.retainLines) this.removeLast("\n");
     this.rightBrace();
   } else {
     this.printInnerComments(node);

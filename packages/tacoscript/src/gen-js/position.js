@@ -25,6 +25,7 @@ export default class Position {
 
   /**
    * Unshift a string from the current position, mantaining the current line and column.
+   * TODO: rename to "pop"
    */
 
   unshift(str) {

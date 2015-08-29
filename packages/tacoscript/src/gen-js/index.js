@@ -9,6 +9,8 @@ import n from "./node";
 import * as t from "../types";
 import { types as tt } from "babylon/lib/tokenizer/types";
 
+import isArray from "lodash/lang/isArray";
+
 /**
  * Babel's code generator, turns an ast into code, maintaining sourcemaps,
  * user preferences, and valid output.
@@ -26,7 +28,7 @@ class CodeGenerator {
     this.whitespace = new Whitespace(this.tokens);
     this.position   = new Position;
     this.map        = new SourceMap(this.position, opts, code);
-    this.buffer     = new TokenBuffer(this.position, this.format);
+    this.buffer     = new TokenBuffer(this.position, code);
   }
 
   /**
@@ -69,7 +71,7 @@ class CodeGenerator {
    */
 
   catchUp(node) {
-    // catch up to this nodes newline if we're behind
+    // catch up to this nodes first token if we're behind
     // TODO
   }
 
@@ -87,9 +89,11 @@ class CodeGenerator {
     var needsParens = n.needsParens(node, parent);
     if (needsParens) this.push("(");
 
+    this.printLeadingComments(node, parent);
+
     this.catchUp(node);
 
-    this.printLeadingTokens(node, parent);
+    // this.printLeadingTokens(node, parent);
 
     if (opts.before) opts.before();
     this.map.mark(node, "start");
@@ -101,7 +105,7 @@ class CodeGenerator {
     this.map.mark(node, "end");
     if (opts.after) opts.after();
 
-    this.printTrailingTokens(node, parent);
+    // this.printTrailingTokens(node, parent);
 
     this.printTrailingComments(node, parent);
   }
@@ -117,6 +121,8 @@ class CodeGenerator {
 
     if (opts.indent) this.indent();
 
+    var separatorIsArray = isArray(opts.separator);
+
     var printOpts = {
       statement: opts.statement,
       addNewlines: opts.addNewlines,
@@ -126,7 +132,11 @@ class CodeGenerator {
         }
 
         if (opts.separator && i < len - 1) {
-          this.push(opts.separator);
+          if (separatorIsArray) {
+            this.push(...opts.separator);
+          } else {
+            this.push(opts.separator);
+          }
         }
       }
     };
@@ -155,7 +165,7 @@ class CodeGenerator {
   printList(items, parent, opts = {}) {
     if (opts.separator == null) {
       opts.separator = ",";
-      if (!this.format.compact) opts.separator += " ";
+      // if (!this.format.compact) opts.separator += " ";
     }
 
     return this.printJoin(items, parent, opts);
@@ -272,15 +282,7 @@ class CodeGenerator {
    */
 
   shouldPrintComment(comment) {
-    if (this.format.shouldPrintComment) {
-      return this.format.shouldPrintComment(comment.value);
-    } else {
-      if (comment.value.indexOf("@license") >= 0 || comment.value.indexOf("@preserve") >= 0) {
-        return true;
-      } else {
-        return this.format.comments;
-      }
-    }
+    return true;
   }
 
   /**
@@ -308,30 +310,16 @@ class CodeGenerator {
         column++;
       }
 
-      //
-      if (comment.type === "CommentBlock" && this.format.indent.adjustMultilineComment) {
-        var offset = comment.loc && comment.loc.start.column;
-        if (offset) {
-          var newlineRegex = new RegExp("\\n\\s{1," + offset + "}", "g");
-          val = val.replace(newlineRegex, "\n");
-        }
-
-        var indent = Math.max(this.indentSize(), column);
-        val = val.replace(/\n/g, `\n${repeating(" ", indent)}`);
-      }
-
-      if (column === 0) {
-        val = this.getIndent() + val;
-      }
-
-      // force a newline for line comments when retainLines is set in case the next printed node
-      // doesn't catch up
-      if ((this.format.compact || this.format.retainLines) && comment.type === "CommentLine") {
-        val += "\n";
-      }
+      // if (column === 0) {
+      //   val = this.getIndent() + val;
+      // }
 
       //
       this._push(val);
+
+      if (comment.type === "CommentLine") {
+        this._push("\n");
+      }
 
       // whitespace after
       this.newline(this.whitespace.getNewlinesAfter(comment));

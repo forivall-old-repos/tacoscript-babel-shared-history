@@ -4,16 +4,19 @@ import isNumber from "lodash/lang/isNumber";
 import isArray from "lodash/lang/isArray";
 import isString from "lodash/lang/isString";
 
-import getTokenFromString from "../helpers/get-token";
+import getToken from "../helpers/get-token";
 import { Token } from "babylon/lib/tokenizer";
+import { types as tt } from "babylon/lib/tokenizer/types";
 
 /**
  * Buffer for collecting generated output.
  */
 
 export default class TokenBuffer {
-  constructor(position) {
+  constructor(position, code) {
+    this.code = code;
     this.position = position;
+    this._indent = 0;
     this.tokens   = [];
     this._buf     = "";
   }
@@ -23,7 +26,16 @@ export default class TokenBuffer {
    */
 
   get() {
+    this._serializeTokens();
     return this._buf;
+  }
+
+  indent() {
+    console.log('indent');
+  }
+
+  dedent() {
+    console.log('dedent');
   }
 
   /**
@@ -63,8 +75,8 @@ export default class TokenBuffer {
    * Add a space to the buffer unless it is compact (override with force).
    */
 
-  space(force?) {
-    if (force || this.buf.buf && !this.isLast(" ") && !this.isLast("\n")) {
+  space(force) {
+    if (force || this.tokens.length && !this.isLast(" ") && !this.isLast("\n")) {
       this.push(" ");
     }
   }
@@ -76,7 +88,7 @@ export default class TokenBuffer {
   removeLast(cha) {
     if (!this.isLast(cha)) return;
 
-    this.buf.buf = this.buf.buf.substr(0, this.buf.buf.length - 1);
+    this.tokens.pop();
     this.position.unshift(cha);
   }
 
@@ -120,19 +132,12 @@ export default class TokenBuffer {
    */
 
   newline(i, removeLast) {
-    if (this.format.compact || this.format.retainLines) return;
-
-    if (this.format.concise) {
-      this.space();
-      return;
-    }
-
     removeLast = removeLast || false;
 
     if (isNumber(i)) {
       i = Math.min(2, i);
 
-      if (this.endsWith("{\n") || this.endsWith(":\n")) i--;
+      if (this.endsWith(["{", "\n"]) || this.endsWith([":", "\n"])) i--;
       if (i <= 0) return;
 
       while (i > 0) {
@@ -170,30 +175,31 @@ export default class TokenBuffer {
    */
 
   _removeSpacesAfterLastNewline() {
-    var lastNewlineIndex = this.buf.buf.lastIndexOf("\n");
-    if (lastNewlineIndex === -1) {
-      return;
-    }
-
-    var index = this.buf.buf.length - 1;
-    while (index > lastNewlineIndex) {
-      if (this.buf.buf[index] !== " ") {
-        break;
-      }
-
-      index--;
-    }
-
-    if (index === lastNewlineIndex) {
-      this.buf.buf = this.buf.buf.substring(0, index + 1);
-    }
+    // var lastNewlineIndex = this.buf.lastIndexOf("\n");
+    // if (lastNewlineIndex === -1) {
+    //   return;
+    // }
+    //
+    // var index = this.buf.buf.length - 1;
+    // while (index > lastNewlineIndex) {
+    //   if (this.buf.buf[index] !== " ") {
+    //     break;
+    //   }
+    //
+    //   index--;
+    // }
+    //
+    // if (index === lastNewlineIndex) {
+    //   this.buf.buf = this.buf.buf.substring(0, index + 1);
+    // }
   }
 
   /**
    * Push a string token(s) to the buffer, maintaining indentation and newlines.
    */
 
-  push(...tokens) {
+  push(..._tokens) {
+    let tokens = _tokens;
     for (let token of (tokens: Array)) {
       this._push(token);
     }
@@ -205,7 +211,9 @@ export default class TokenBuffer {
 
   _push(token) {
     if (isString(token)) {
-      token = new Token(getTokenFromString(token));
+      let s = getToken(token);
+      token = new Token(s);
+      token.raw = s.raw;
     }
 
     // see startTerminatorless() instance method
@@ -222,7 +230,7 @@ export default class TokenBuffer {
 
         if (cha === "\n") {
           // we're going to break this terminator expression so we need to add a parentheses
-          this._push1("(");
+          this._push("(");
           this.indent();
           parenPushNewlineState.printed = true;
         }
@@ -238,8 +246,15 @@ export default class TokenBuffer {
    * Test if the buffer ends with a string.
    */
 
-  endsWith(str, buf = this.buf.buf) {
-    return buf.slice(-str.length) === str;
+  endsWith(match, tokens = this.tokens) {
+    if (isArray(match)) {
+      if (match.length > tokens.length) { return false; }
+      for (let i = 0, len = match.length, tokenOffset = tokens.length - len; i < len; i++) {
+        if (!this.matches(tokens[tokenOffset + i], match[i])) { return false; }
+      }
+      return true;
+    }
+    return this.matches(tokens[tokens.length - 1], match);
   }
 
   /**
@@ -247,13 +262,66 @@ export default class TokenBuffer {
    */
 
   isLast(cha) {
-    var buf = this.buf.buf;
-    var last = buf[buf.length - 1];
+    return this.matches(this.tokens[this.tokens.length - 1], cha);
+  }
 
+  matches(token, cha) {
+    var ctok;
     if (Array.isArray(cha)) {
-      return includes(cha, last);
+      for (let ch in (cha: Array)) {
+        ctok = getToken(ch);
+        if (ctok.value === token.value && ctok.type === token.type) {
+          return true;
+        }
+      }
+      return false;
     } else {
-      return cha === last;
+      ctok = getToken(cha);
+      return ctok.value === token.value && ctok.type === token.type;
     }
   }
+
+  _serializeTokens() {
+    let buf = "";
+    for (let token of (this.tokens: Array)) {
+      if (token.start && token.end) {
+        buf.push(this.code.slice(token.start, token.end));
+      } else if (tokenSerializationTypes.label.contains(token.type.label)) {
+        buf.push(token.type.label);
+      } else if (tokenSerializationTypes.label.contains(token.type.value)) {
+        buf.push(token.value);
+      } else if (tokenSerializationTypes.label.contains(token.type.value)) {
+        buf.push(token.raw);
+      }
+    }
+    this._buf = buf;
+  }
 }
+
+const labelTokens = [
+  'bracketL', 'bracketR', 'braceL', 'braceR', 'parenL', 'parenR',
+  'comma', 'semi', 'colon', 'doubleColon', 'dot', 'question', 'arrow',
+  'ellipsis', 'backQuote', 'dollarBraceL', 'at'
+];
+const valueTokens = [
+  'name', 'template', 'eq', 'assign', 'incDec', 'prefix',
+  'logicalOR', 'logicalAND', 'bitwiseOR', 'bitwiseXOR', 'bitwiseAND',
+  'equality', 'relational', 'bitShift', 'plusMin',
+  'modulo', 'star', 'slash', 'exponent',
+  // keywords
+  '_break', '_case', '_catch', '_continue', '_debugger', '_default',
+  '_do', '_else', '_finally', '_for', '_function', '_if', '_return',
+  '_switch', '_throw', '_try', '_var', '_let', '_const', '_while',
+  '_with', '_new', '_this', '_super', '_class', '_extends', '_export',
+  '_import', '_yield', '_null', '_true', '_false', '_in', '_instanceof',
+  '_typeof', '_void', '_delete'
+];
+const rawTokens = ['num', 'regexp', 'string'];
+const specialTokens = ['eof'];
+
+const tokenSerializationTypes = {
+  label: labelTokens.map((t) => tt[t].label),
+  value: valueTokens.map((t) => tt[t].label),
+  raw: rawTokens.map((t) => tt[t].label),
+  special: specialTokens.map((t) => tt[t].label)
+};

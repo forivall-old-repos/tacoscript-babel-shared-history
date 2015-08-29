@@ -14,13 +14,13 @@ export function ClassDeclaration(node, parent) {
   this.print(node.typeParameters, node);
 
   if (node.superClass) {
-    this.push(" extends ");
+    this.push(" ", "extends", " ");
     this.print(node.superClass, node);
     this.print(node.superTypeParameters, node);
   }
 
   if (node.implements) {
-    this.push(" implements ");
+    this.push(" ", "implements", " ");
     this.printJoin(node.implements, node, { separator: ", " });
   }
 
@@ -62,7 +62,7 @@ export function ClassBody(node, parent) {
 export function ClassProperty(node, parent) {
   this.printList(node.decorators, node, { separator: "" });
 
-  if (node.static) this.push("static ");
+  if (node.static) this.push("static", " ");
   this.print(node.key, node);
   this.print(node.typeAnnotation, node);
   if (node.value) {
@@ -82,7 +82,7 @@ export function MethodDefinition(node, parent) {
   this.printList(node.decorators, node, { separator: "" });
 
   if (node.static) {
-    this.push("static ");
+    this.push("static", " ");
   }
 
   this._method(node);
