@@ -25,7 +25,7 @@ export function BlockStatement(node, parent) {
     this.printSequence(node.body, node, { indent: true });
     this.rightBrace();
   } else {
-    this.printInnerComments(node);
+    this.catchUpToBlockEnd();
     this.push("}");
   }
 }

@@ -285,7 +285,7 @@ export default class TokenBuffer {
   _serializeTokens() {
     let buf = "";
     for (let token of (this.tokens: Array)) {
-      if (token.start && token.end) {
+      if (token.start != null && token.end != null) {
         buf += (this.code.slice(token.start, token.end));
       } else if (token.type === "Whitespace") {
         buf += token.value;

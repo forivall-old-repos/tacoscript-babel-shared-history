@@ -10,6 +10,7 @@ import * as t from "../types";
 import { types as tt } from "babylon/lib/tokenizer/types";
 
 import isArray from "lodash/lang/isArray";
+import includes from "lodash/collection/includes";
 
 /**
  * Babel's code generator, turns an ast into code, maintaining sourcemaps,
@@ -21,11 +22,11 @@ class CodeGenerator {
     opts = opts || {};
 
     this.comments = ast.comments || [];
-    this.tokens   = ast.tokens || [];
+    this.tokens   = ast.whitespaceTokens || ast.tokens || [];
     this.opts     = opts;
     this.ast      = ast;
 
-    this.whitespace = new Whitespace(this.tokens);
+    this._index = 0;
     this.position   = new Position;
     this.map        = new SourceMap(this.position, opts, code);
     this.buffer     = new TokenBuffer(this.position, code);
@@ -59,6 +60,7 @@ class CodeGenerator {
     var ast = this.ast;
 
     this.print(ast);
+    this.ast.generatedTokens = this.buffer.tokens;
 
     return {
       map:  this.map.get(),
@@ -73,6 +75,20 @@ class CodeGenerator {
   catchUp(node) {
     // catch up to this nodes first token if we're behind
     // TODO
+    for (let i = this._index; i < node.firstTokenIndex; i++) {
+      let token = this.tokens[i];
+      if (includes(['Whitespace', 'CommentLine', 'CommentBlock'], token.type)) {
+        // console.log('catchup', i);
+        this._push(token);
+      }
+    }
+    this._index = node.firstTokenIndex;
+  }
+
+  catchUpToBlockEnd() {
+    // catch up to this nodes first token if we're behind
+    // TODO
+    console.log('catchup');
   }
 
   /**
@@ -89,8 +105,6 @@ class CodeGenerator {
     var needsParens = n.needsParens(node, parent);
     if (needsParens) this.push("(");
 
-    this.printLeadingComments(node, parent);
-
     this.catchUp(node);
 
     // this.printLeadingTokens(node, parent);
@@ -106,8 +120,6 @@ class CodeGenerator {
     if (opts.after) opts.after();
 
     // this.printTrailingTokens(node, parent);
-
-    this.printTrailingComments(node, parent);
   }
 
   /**
@@ -194,47 +206,6 @@ class CodeGenerator {
     }
   }
 
-  /**
-   * [Please add a description.]
-   */
-
-  generateComment(comment) {
-    var val = comment.value;
-    if (comment.type === "CommentLine") {
-      val = `//${val}`;
-    } else {
-      val = `/*${val}*/`;
-    }
-    return val;
-  }
-
-  /**
-   * [Please add a description.]
-   */
-
-  printTrailingComments(node, parent) {
-    this._printComments(this.getComments("trailingComments", node, parent));
-  }
-
-  /**
-   * [Please add a description.]
-   */
-
-  printInnerComments(node) {
-    if (!node.innerComments) return;
-    this.indent();
-    this._printComments(node.innerComments);
-    this.dedent();
-  }
-
-  /**
-   * [Please add a description.]
-   */
-
-  printLeadingComments(node, parent) {
-    this._printComments(this.getComments("leadingComments", node, parent));
-  }
-
   printLeadingTokens(node, parent) {
     if (node.tokensBefore) {
 
@@ -243,86 +214,6 @@ class CodeGenerator {
 
   printTrailingTokens(node, parent) {
     // debugger;
-  }
-
-  /**
-   * [Please add a description.]
-   */
-
-  getComments(key, node, parent) {
-    if (t.isExpressionStatement(parent)) {
-      return [];
-    }
-
-    var comments = [];
-    var nodes    = [node];
-
-    if (t.isExpressionStatement(node)) {
-      nodes.push(node.argument);
-    }
-
-    for (let node of (nodes: Array)) {
-      comments = comments.concat(this._getComments(key, node));
-    }
-
-    return comments;
-  }
-
-  /**
-   * [Please add a description.]
-   */
-
-  _getComments(key, node) {
-    return (node && node[key]) || [];
-  }
-
-  /**
-   * [Please add a description.]
-   */
-
-  shouldPrintComment(comment) {
-    return true;
-  }
-
-  /**
-   * [Please add a description.]
-   */
-
-  _printComments(comments) {
-    if (!comments || !comments.length) return;
-
-    for (var comment of (comments: Array)) {
-      if (!this.shouldPrintComment(comment)) continue;
-      if (comment._displayed) continue;
-      comment._displayed = true;
-
-      this.catchUp(comment);
-
-      // whitespace before
-      this.newline(this.whitespace.getNewlinesBefore(comment));
-
-      var column = this.position.column;
-      var val    = this.generateComment(comment);
-
-      if (column && !this.isLast(["\n", " ", "[", "{"])) {
-        this._push(" ");
-        column++;
-      }
-
-      // if (column === 0) {
-      //   val = this.getIndent() + val;
-      // }
-
-      //"get "
-      this._push(val);
-
-      if (comment.type === "CommentLine") {
-        this._push("\n");
-      }
-
-      // whitespace after
-      this.newline(this.whitespace.getNewlinesAfter(comment));
-    }
   }
 }
 

@@ -34,7 +34,6 @@ export function ObjectExpression(node) {
   var props = node.properties;
 
   this.push("{");
-  this.printInnerComments(node);
 
   if (props.length) {
     this.space();
@@ -98,7 +97,6 @@ export function ArrayExpression(node) {
   var len   = elems.length;
 
   this.push("[");
-  this.printInnerComments(node);
 
   for (var i = 0; i < elems.length; i++) {
     var elem = elems[i];
@@ -130,7 +128,7 @@ export { ArrayExpression as ArrayPattern };
  */
 
 export function Literal(node) {
-  this.push(""); // hack: catch up indentation
+  // this.push(""); // hack: catch up indentation
   this._push(this._Literal(node));
 }
 

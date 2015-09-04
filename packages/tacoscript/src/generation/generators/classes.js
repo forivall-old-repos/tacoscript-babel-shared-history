@@ -41,7 +41,7 @@ export { ClassDeclaration as ClassExpression };
 export function ClassBody(node, print) {
   this.push("{");
   if (node.body.length === 0) {
-    print.printInnerComments();
+    print.catchUpToBlockEnd();
     this.push("}");
   } else {
     this.newline();
