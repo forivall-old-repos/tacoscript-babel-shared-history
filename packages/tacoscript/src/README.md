@@ -1,4 +1,3 @@
-## Diving into Babel
+## tacoscript-core/src
 
-If you look around in the various directories in here you'll find some details
-about the organization of the Babel codebase.
+TODO

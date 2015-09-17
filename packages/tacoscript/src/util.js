@@ -1,74 +1,18 @@
 import escapeRegExp from "lodash/string/escapeRegExp";
 import startsWith from "lodash/string/startsWith";
-import cloneDeep from "lodash/lang/cloneDeep";
 import isBoolean from "lodash/lang/isBoolean";
 import minimatch from "minimatch";
-import contains from "lodash/collection/contains";
-import traverse from "babel-core/lib/traversal";
 import isString from "lodash/lang/isString";
 import isRegExp from "lodash/lang/isRegExp";
-import Module from "module";
-import isEmpty from "lodash/lang/isEmpty";
-import parse from "./helpers/parse-js";
-import path from "path";
-import has from "lodash/object/has";
-import * as t from "./types";
 import slash from "slash";
 
 export { inherits, inspect } from "util";
 
 /**
- * Test if a filename ends with a compilable extension.
- */
-
-export function canCompile(filename: string, altExts?: Array<string>) {
-  var exts = altExts || canCompile.EXTENSIONS;
-  var ext = path.extname(filename);
-  return contains(exts, ext);
-}
-
-/**
- * Default set of compilable extensions.
- */
-
-canCompile.EXTENSIONS = [".js", ".jsx", ".es6", ".es"];
-
-/**
- * Module resolver that swallows errors.
- */
-
-export function resolve(loc: string) {
-  try {
-    return require.resolve(loc);
-  } catch (err) {
-    return null;
-  }
-}
-
-var relativeMod;
-
-/**
- * Resolve a filename relative to the current working directory.
- */
-
-export function resolveRelative(loc: string) {
-  // we're in the browser, probably
-  if (typeof Module === "object") return null;
-
-  if (!relativeMod) {
-    relativeMod = new Module;
-    relativeMod.paths = Module._nodeModulePaths(process.cwd());
-  }
-
-  try {
-    return Module._resolveFilename(loc, relativeMod);
-  } catch (err) {
-    return null;
-  }
-}
-
-/**
  * Create an array from any value, splitting strings by ",".
+ * Borrowed from Babel.
+ * TODO: unify with arrayify
+ * TODO: move into separate repo
  */
 
 export function list(val?: string): Array<string> {
@@ -134,104 +78,4 @@ export function booleanify(val: any): boolean {
   if (val === "true") return true;
   if (val === "false") return false;
   return val;
-}
-
-/**
- * Tests if a filename should be ignored based on "ignore" and "only" options.
- */
-
-export function shouldIgnore(filename: string, ignore: Array, only): boolean {
-  filename = slash(filename);
-
-  if (only) {
-    for (let pattern of (only: Array)) {
-      if (_shouldIgnore(pattern, filename)) return false;
-    }
-    return true;
-  } else if (ignore.length) {
-    for (let pattern of (ignore: Array)) {
-      if (_shouldIgnore(pattern, filename)) return true;
-    }
-  }
-
-  return false;
-}
-
-/**
- * [Please add a description.]
- */
-
-function _shouldIgnore(pattern, filename) {
-  if (typeof pattern === "function") {
-    return pattern(filename);
-  } else {
-    return pattern.test(filename);
-  }
-}
-
-/**
- * A visitor for Babel templates, replaces placeholder references.
- */
-
-var templateVisitor = {
-
-  /**
-   * 360 NoScope PWNd
-   */
-  noScope: true,
-
-  enter(node: Object, parent: Object, scope, nodes: Array<Object>) {
-    if (t.isExpressionStatement(node)) {
-      node = node.expression;
-    }
-
-    if (t.isIdentifier(node) && has(nodes, node.name)) {
-      this.skip();
-      this.replaceInline(nodes[node.name]);
-    }
-  },
-
-  exit(node: Object) {
-    traverse.clearNode(node);
-  }
-};
-
-/**
- * Create an instance of a template to use in a transformer.
- */
-
-export function template(name: string, nodes?: Array<Object>, keepExpression?: boolean): Object {
-  var ast = exports.templates[name];
-  if (!ast) throw new ReferenceError(`unknown template ${name}`);
-
-  if (nodes === true) {
-    keepExpression = true;
-    nodes = null;
-  }
-
-  ast = cloneDeep(ast);
-
-  if (!isEmpty(nodes)) {
-    traverse(ast, templateVisitor, null, nodes);
-  }
-
-  if (ast.body.length > 1) return ast.body;
-
-  var node = ast.body[0];
-
-  if (!keepExpression && t.isExpressionStatement(node)) {
-    return node.expression;
-  } else {
-    return node;
-  }
-}
-
-/**
- * Parse a template.
- */
-
-export function parseTemplate(loc: string, code: string): Object {
-  var ast = parse(code, { filename: loc, looseModules: true }).program;
-  ast = traverse.removeProperties(ast);
-  return ast;
 }

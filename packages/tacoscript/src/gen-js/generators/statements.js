@@ -1,4 +1,3 @@
-import repeating from "repeating";
 import * as t from "../../types";
 
 /**
@@ -242,33 +241,8 @@ export function DebuggerStatement() {
 export function VariableDeclaration(node, parent) {
   this.push(node.kind, " ");
 
-  var hasInits = false;
-  // don't add whitespace to loop heads
-  if (!t.isFor(parent)) {
-    for (var declar of (node.declarations: Array)) {
-      if (declar.init) {
-        // has an init so let's split it up over multiple lines
-        hasInits = true;
-      }
-    }
-  }
-
-  //
-  // use a pretty separator when we aren't in compact mode, have initializers and don't have retainLines on
-  // this will format declarations like:
-  //
-  //   var foo = "bar", bar = "foo";
-  //
-  // into
-  //
-  //   var foo = "bar",
-  //       bar = "foo";
-  //
-
   var sep = [",", " "];
   // sep = `,\n${repeating(" ", node.kind.length + 1)}`;
-
-  //
 
   this.printList(node.declarations, node, { separator: sep });
 

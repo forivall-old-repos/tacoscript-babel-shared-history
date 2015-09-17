@@ -1,8 +1,11 @@
 var pathExists = require("path-exists");
 var util       = require("../lib/util");
+var resolve    = require("try-resolve");
 var path       = require("path");
 var fs         = require("fs");
 var _          = require("lodash");
+
+// TODO: switch to https://github.com/sebmck/mocha-fixtures
 
 var humanize = function (val, noext) {
   if (noext) val = path.basename(val, path.extname(val));
@@ -43,7 +46,7 @@ exports.get = function (entryName, entryLoc) {
     };
     suites.push(suite);
 
-    var suiteOptsLoc = util.resolve(suite.filename + "/options");
+    var suiteOptsLoc = resolve(suite.filename + "/options");
     if (suiteOptsLoc) suite.options = require(suiteOptsLoc);
 
     if (fs.statSync(suite.filename).isFile()) {
@@ -84,7 +87,7 @@ exports.get = function (entryName, entryLoc) {
         sourceMapName:    expectLocAlias
       }, _.cloneDeep(suite.options));
 
-      var taskOptsLoc = util.resolve(taskDir + "/options");
+      var taskOptsLoc = resolve(taskDir + "/options");
       if (taskOptsLoc) _.merge(taskOpts, require(taskOptsLoc));
 
       var test = {

@@ -23,24 +23,5 @@ export default function (code, opts = {}) {
     parseOpts.plugins.jsx = true;
     parseOpts.plugins.flow = true;
   }
-  // {
-  //   range: true,
-  //   sourceType: 'module',
-  //   allowImportExportEverywhere: true,
-  //   allowReturnOutsideFunction:  true,
-  //   allowHashBang:               true,
-  //   ecmaVersion:                 7,
-  //   strictMode:                  false,
-  //   locations:                   true,
-  //   ranges:                      true,
-  //   features: {
-  //     "es7.decorators": true,
-  //     "es7.comprehensions": true,
-  //     "es7.asyncFunctions": true,
-  //     "es7.exportExtensions": true,
-  //     "es7.functionBind": true
-  //   },
-  //   plugins: { jsx: true, flow: true }
-  // }
   return attachTokens(babylon.parse(code, parseOpts), code, {whitespace: true});
 }
