@@ -13,6 +13,3 @@ script: make test-travis
 after_success:
  - ./scripts/travis/setup-git.sh
  - ./scripts/travis/merge-development-with-master.sh
-
-notifications:
-  slack: babeljs:5Wy4QX13KVkGy9CnU0rmvgeK
